@@ -2,6 +2,7 @@ var DETAIL_IMAGE_SELECTOR = '[data-image-role="target"]';
 var DETAIL_TITLE_SELECTOR = '[data-image-role="title"]';
 var DETAIL_FRAME_SELECTOR = '[data-image-role="frame"]';
 var THUMBNAIL_LINK_SELECTOR = '[data-image-role="trigger"]';
+var ARROW_SELECTOR = '[data-image-role="arrow"]';
 var HIDDEN_DETAIL_CLASS = 'hidden-detail';
 var TINY_EFFECT_CLASS = 'is-tiny';
 var ESC_KEY = 27;
@@ -9,7 +10,6 @@ var ESC_KEY = 27;
 
 function setDetails(imageURL, titleText) {
     'use strict';
-    console.log("setDetails");
     var detailImage = document.querySelector(DETAIL_IMAGE_SELECTOR);
     detailImage.setAttribute('src', imageURL);
 
@@ -19,25 +19,21 @@ function setDetails(imageURL, titleText) {
 
 function imageFromThumb(thumbnail) {
     'use strict';
-    console.log("imageFromThumb");
     return thumbnail.getAttribute('data-image-url');
 }
 
 function titleFromThumb(thumbnail) {
     'use strict';
-    console.log("titleFromThumb");
     return thumbnail.getAttribute('data-image-title');
 }
 
 function setDetailsFromThumb(thumbnail) { 
     'use strict';
-    console.log("setDetailsFromThumb");
     setDetails(imageFromThumb(thumbnail), titleFromThumb(thumbnail)); 
 }
 
 function addThumbClickHandler(thumb) {
     'use strict';
-    console.log("addThumbClickHandler");
     thumb.addEventListener('click', function (event) {
         event.preventDefault(); 
         setDetailsFromThumb(thumb);
@@ -47,7 +43,6 @@ function addThumbClickHandler(thumb) {
 
 function getThumbnailsArray() { 
     'use strict';
-    console.log("getThumbnailsArray");
     var thumbnails = document.querySelectorAll(THUMBNAIL_LINK_SELECTOR);
     var thumbnailArray = [].slice.call(thumbnails); // converts nodelist to array
     return thumbnailArray; 
@@ -79,11 +74,64 @@ function addKeyPressHandler() {
     });
 }
 
+function getArrows() {
+    var arrows = document.querySelectorAll(ARROW_SELECTOR);
+    var arrowsArray = [].slice.call(arrows); 
+    return arrowsArray; 
+}
+
+function previousArrowClickHandler() {
+    'use strict';
+    var arrow = document.querySelectorAll(ARROW_SELECTOR)[0];
+    var currentDetail = document.querySelector(DETAIL_IMAGE_SELECTOR);
+    arrow.addEventListener('click', function (event) {
+        var thumbnails = getThumbnailsArray();
+        for (var i = 0; i < thumbnails.length; i++) {
+            if (thumbnails[i].pathname === ("/" + currentDetail.attributes.src.value)) {
+                if (i === 0) {
+                    setDetailsFromThumb(thumbnails[thumbnails.length - 1]);
+                    showDetails();
+                }
+                else {
+                    setDetailsFromThumb(thumbnails[i-1]);
+                    showDetails();
+                }
+                break;
+            }
+        }
+    });
+}
+
+function nextArrowClickHandler() {
+    'use strict';
+    var arrow = document.querySelectorAll(ARROW_SELECTOR)[1];
+    var currentDetail = document.querySelector(DETAIL_IMAGE_SELECTOR);
+    arrow.addEventListener('click', function (event) {
+        var thumbnails = getThumbnailsArray();
+        for (var i = 0; i < thumbnails.length; i++) {
+            if (thumbnails[i].pathname === ("/" + currentDetail.attributes.src.value)) {
+                if (i === thumbnails.length - 1) {
+                    setDetailsFromThumb(thumbnails[0]);
+                    showDetails();
+                }
+                else {
+                    setDetailsFromThumb(thumbnails[i+1]);
+                    showDetails();
+                }
+                break;
+            }
+        }
+    });
+}
+
+
 function initializeEvents() {
     'use strict';
     console.log("initialize");
     var thumbnails = getThumbnailsArray();
     thumbnails.forEach(addThumbClickHandler);
+    previousArrowClickHandler();
+    nextArrowClickHandler();
     addKeyPressHandler();
 }
 

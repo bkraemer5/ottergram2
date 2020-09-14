@@ -103,6 +103,17 @@ a {
     align-items: center;
 }
 
+.arrow {
+    color: black;
+    font-size: 37px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.arrow:hover {
+    color: white; 
+}
+
 .detail-image-frame {
     position: relative;
     text-align: center;
